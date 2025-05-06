@@ -1,0 +1,32 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --main-bg-color: #fae6bb;
+    --main-accent-color: #e73413;
+    --main-typography-color: #110d0a;
+    --secondary-typography-color: #fbeee4;
+  }
+}
+
+@layer utilities {
+  .animate-pop-in {
+    animation: pop-in 0.5s ease-out;
+  }
+
+  @keyframes pop-in {
+    0% {
+      opacity: 0;
+      transform: scale(0.8);
+    }
+    70% {
+      transform: scale(1.05);
+    }
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}
