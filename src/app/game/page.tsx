@@ -6,15 +6,6 @@ export default function GamePage() {
       <div className="w-full">
         <Game />
       </div>
-
-      <div className="mt-10">
-        <a
-          href="/"
-          className="text-sm hover:underline hover:underline-offset-4 flex items-center gap-2"
-        >
-          ← Back to home
-        </a>
-      </div>
     </div>
   );
 }
