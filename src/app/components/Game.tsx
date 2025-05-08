@@ -13,15 +13,10 @@ export default function Game() {
 
   const encouragingMessages = [
     (text: string) => `"${text}" is simmering, but not quite done!`,
-    (text: string) => `You're cooking up something good!`,
     (text: string) => `Wow, "${text}" is a tasty guess!`,
-    (text: string) => `Almost ready to serve!`,
-    (text: string) => `Keep stirring that pot of ideas!`,
     (text: string) => `"${text}" is an interesting ingredient!`,
-    (text: string) => `I can smell success cooking!`,
-    (text: string) => `That's a flavorful attempt!`,
-    (text: string) => `You're heating up!`,
-    (text: string) => `Don't give up, chef!`,
+    (text: string) => `"${text}" is, sadly, not Paneer.`,
+    (text: string) => `"${text}?" Really? Why not Paneer?`,
   ];
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -155,16 +150,16 @@ export default function Game() {
                 {attempts === 1 ? "attempt" : "attempts"}!
               </h2>
               <p className="text-2xl text-gray-500 leading-relaxed pt-6 border-t border-dashed border-[#e0d5c5]">
-                Paneer is a fresh cheese common in South Asian cuisine. It's
-                made by curdling milk with a fruit or vegetable acid like lemon
-                juice.
+                Paneer is a fresh cheese common in South Asian cuisine.
+                It&apos;s made by curdling milk with a fruit or vegetable acid
+                like lemon juice.
               </p>
             </div>
             <button
               onClick={resetGame}
               className="mt-8 bg-white text-[#e73413] border-2 border-[#e73413] rounded-2xl py-5 px-10 text-3xl font-bold cursor-pointer transition-all hover:bg-[rgba(231,52,19,0.05)]"
             >
-              Type 'paneer' again
+              Type &apos;paneer&apos; again
             </button>
           </div>
         )}
