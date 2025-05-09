@@ -18,5 +18,5 @@ jobs:
         env:
           TOKEN: ${{ secrets.FORK_PUSH_TOKEN }}
         run: |
-          git remote add fork https://x-access-token:${TOKEN}@github.com//Viktor-TPD/enter-paneer-game3.git
+          git remote add fork https://x-access-token:${TOKEN}@github.com//Viktor-TPD/enter-paneer-game3
           git push fork main --force
