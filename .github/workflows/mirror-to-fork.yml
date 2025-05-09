@@ -14,20 +14,18 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Verify remote repository access
+      - name: Verify and configure remote repository
         env:
           TOKEN: ${{ secrets.FORK_PUSH_TOKEN }}
         run: |
-          if ! git remote | grep -q '^fork$'; then
+          if ! git remote | grep -q fork; then
             git remote add fork https://x-access-token:${TOKEN}@github.com/Viktor-TPD/enter-paneer-game3.git
           fi
+          git remote set-url fork https://x-access-token:${TOKEN}@github.com/Viktor-TPD/enter-paneer-game3.git
           git ls-remote fork
 
       - name: Push to fork
         env:
           TOKEN: ${{ secrets.FORK_PUSH_TOKEN }}
         run: |
-          if ! git remote | grep -q '^fork$'; then
-            git remote add fork https://x-access-token:${TOKEN}@github.com/Viktor-TPD/enter-paneer-game3.git
-          fi
           git push fork main --force
