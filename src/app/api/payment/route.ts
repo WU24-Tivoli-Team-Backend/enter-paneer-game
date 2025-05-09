@@ -6,7 +6,7 @@ export async function POST(request: NextRequest) {
 
     const baseUrl =
       process.env.NODE_ENV === "production"
-        ? "https://yrgobank.vip/api/test"
+        ? "https://yrgobanken.vip/api/test"
         : "http://localhost:8000/api/test";
 
     const url = new URL(baseUrl);
