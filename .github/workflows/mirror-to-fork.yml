@@ -18,12 +18,16 @@ jobs:
         env:
           TOKEN: ${{ secrets.FORK_PUSH_TOKEN }}
         run: |
-          git remote add fork https://x-access-token:${TOKEN}@github.com/Viktor-TPD/enter-paneer-game3.git
+          if ! git remote | grep -q '^fork$'; then
+            git remote add fork https://x-access-token:${TOKEN}@github.com/Viktor-TPD/enter-paneer-game3.git
+          fi
           git ls-remote fork
 
       - name: Push to fork
         env:
           TOKEN: ${{ secrets.FORK_PUSH_TOKEN }}
         run: |
-          git remote add fork https://x-access-token:${TOKEN}@github.com/Viktor-TPD/enter-paneer-game3.git
+          if ! git remote | grep -q '^fork$'; then
+            git remote add fork https://x-access-token:${TOKEN}@github.com/Viktor-TPD/enter-paneer-game3.git
+          fi
           git push fork main --force
