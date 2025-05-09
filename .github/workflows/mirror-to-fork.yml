@@ -1,0 +1,22 @@
+name: Mirror to Fork
+
+on:
+  push:
+    branches:
+      - main  # or your default branch
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout original repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Push to fork
+        env:
+          TOKEN: ${{ secrets.FORK_PUSH_TOKEN }}
+        run: |
+          git remote add fork https://x-access-token:${TOKEN}@github.com//Viktor-TPD/enter-paneer-game3.git
+          git push fork main --force
