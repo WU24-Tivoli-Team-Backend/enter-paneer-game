@@ -8,6 +8,9 @@ export default function Game() {
   const [attempts, setAttempts] = useState(0);
   const [encouragement, setEncouragement] = useState<string | null>(null);
   const [showMessage, setShowMessage] = useState(false);
+  const [hasPaid, setHasPaid] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const typingTimerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -55,7 +58,7 @@ export default function Game() {
     if (input.toLowerCase() === "paneer") {
       setHasWon(true);
     } else {
-      setEncouragement("Not quite the right ingredient!");
+      setEncouragement(`${input} is not paneer.`);
       setShowMessage(true);
       setTimeout(() => {
         setShowMessage(false);
@@ -66,13 +69,51 @@ export default function Game() {
     }
   };
 
+  const handlePayment = async () => {
+    setIsProcessing(true);
+    setPaymentError(null);
+
+    try {
+      const response = await fetch("/api/payment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          amount: 2.0,
+          currency: "EUR",
+          description: "Paneer Game Access",
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "Payment failed");
+      }
+
+      setHasPaid(true);
+
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 0);
+    } catch (error) {
+      console.error("Payment error:", error);
+      setPaymentError(
+        error instanceof Error ? error.message : "Payment failed"
+      );
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
   const resetGame = () => {
     setInput("");
     setHasWon(false);
     setAttempts(0);
     setEncouragement(null);
     setShowMessage(false);
-
+    setHasPaid(false);
     setTimeout(() => {
       inputRef.current?.focus();
     }, 0);
@@ -93,7 +134,25 @@ export default function Game() {
           TYPE PANEER TO WIN
         </h1>
 
-        {!hasWon ? (
+        {!hasPaid ? (
+          <div className="w-full flex flex-col items-center">
+            <button
+              onClick={handlePayment}
+              disabled={isProcessing}
+              className={`bg-[#e73413] text-white border-none rounded-2xl p-6 text-3xl font-bold cursor-pointer transition-all hover:bg-[#d62800] hover:-translate-y-0.5 active:translate-y-0 ${
+                isProcessing ? "opacity-70 cursor-not-allowed" : ""
+              }`}
+            >
+              {isProcessing ? "Processing..." : "Play! Cost: 2€"}
+            </button>
+
+            {paymentError && (
+              <div className="mt-4 p-4 bg-red-100 text-red-800 border border-red-300 rounded-lg">
+                {paymentError}
+              </div>
+            )}
+          </div>
+        ) : !hasWon ? (
           <>
             <p className="text-center mb-10 text-4xl leading-relaxed">
               There are no secrets, no easter eggs. Just paneer.
