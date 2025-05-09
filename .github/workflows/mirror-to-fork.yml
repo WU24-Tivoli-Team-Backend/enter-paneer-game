@@ -14,18 +14,21 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Configure SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
       - name: Verify and configure remote repository
-        env:
-          TOKEN: ${{ secrets.FORK_PUSH_TOKEN }}
         run: |
           if ! git remote | grep -q fork; then
-            git remote add fork https://x-access-token:${TOKEN}@github.com/Viktor-TPD/enter-paneer-game3.git
+            git remote add fork git@github.com:Viktor-TPD/enter-paneer-game.git
           fi
-          git remote set-url fork https://x-access-token:${TOKEN}@github.com/Viktor-TPD/enter-paneer-game3.git
+          git remote set-url fork git@github.com:Viktor-TPD/enter-paneer-game.git
           git ls-remote fork
 
       - name: Push to fork
-        env:
-          TOKEN: ${{ secrets.FORK_PUSH_TOKEN }}
         run: |
           git push fork main --force
