@@ -1,0 +1,34 @@
+name: Mirror to Fork
+
+on:
+  push:
+    branches:
+      - main  # or your default branch
+
+jobs:
+  mirror:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout original repo
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Configure SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+      - name: Verify and configure remote repository
+        run: |
+          if ! git remote | grep -q fork; then
+            git remote add fork git@github.com:Viktor-TPD/enter-paneer-game.git
+          fi
+          git remote set-url fork git@github.com:Viktor-TPD/enter-paneer-game.git
+          git ls-remote fork
+
+      - name: Push to fork
+        run: |
+          git push fork main --force
