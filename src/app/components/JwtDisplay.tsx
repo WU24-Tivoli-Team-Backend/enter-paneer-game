@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { decodeJwt } from "./../utils/decodeJwt";
+import { useGameContext } from "./GameContext";
+import { decodeJwt } from "../utils/decodeJwt";
 
 /**
  * Component to receive and display JWT token from parent application
  */
 export default function JwtDisplay() {
-  const [jwtToken, setJwtToken] = useState<string | null>(null);
+  const { jwtToken, setJwtToken } = useGameContext();
   const [decodedToken, setDecodedToken] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -15,7 +16,7 @@ export default function JwtDisplay() {
         const allowedOrigins = [
           "http://localhost:3000",
           "http://127.0.0.1:3000",
-          // @todo: Add production origins when deploying
+          // Add production origins when deploying
         ];
 
         if (!allowedOrigins.includes(event.origin)) {
@@ -56,11 +57,11 @@ export default function JwtDisplay() {
     return () => {
       window.removeEventListener("message", handleMessage);
     };
-  }, []);
+  }, [setJwtToken]);
 
   if (!jwtToken) {
     return (
-      <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+      <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg mb-6">
         <p className="text-sm text-yellow-700">
           Waiting for JWT token from parent application...
         </p>
@@ -70,7 +71,7 @@ export default function JwtDisplay() {
 
   if (error) {
     return (
-      <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+      <div className="p-4 bg-red-50 border border-red-200 rounded-lg mb-6">
         <p className="text-sm text-red-700">Error: {error}</p>
       </div>
     );
