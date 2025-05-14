@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useGameContext } from "./GameContext";
-import { decodeJwt } from "../utils/decodeJwt";
+import { decodeJwt } from "../utils/auth";
 
 /**
  * Component to receive and display JWT token from parent application
@@ -16,7 +16,6 @@ export default function JwtDisplay() {
         const allowedOrigins = [
           "http://localhost:3000",
           "http://127.0.0.1:3000",
-          // Add production origins when deploying
         ];
 
         if (!allowedOrigins.includes(event.origin)) {

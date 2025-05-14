@@ -1,40 +1,23 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-import jwt from "jsonwebtoken";
+// import type { NextApiRequest, NextApiResponse } from "next";
+// import { verifyToken, AuthResponse } from "../../utils/auth";
 
-interface DecodedToken {
-  id: string;
-  [key: string]: any;
-}
+// export default function handler(
+//   req: NextApiRequest,
+//   res: NextApiResponse<AuthResponse>
+// ) {
+//   const authHeader = req.headers.authorization;
 
-type ResponseData = {
-  userId?: string;
-  authenticated?: boolean;
-  error?: string;
-};
+//   if (!authHeader || !authHeader.startsWith("Bearer ")) {
+//     return res.status(401).json({ error: "Missing or invalid token" });
+//   }
 
-export default function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<ResponseData>
-) {
-  // Extract token from headers
-  const authHeader = req.headers.authorization;
+//   const token = authHeader.split(" ")[1];
 
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ error: "Missing or invalid token" });
-  }
+//   const authResponse = verifyToken(token, "YOUR_SECRET_KEY");
 
-  const token = authHeader.split(" ")[1];
-
-  try {
-    // Verify token on server side
-    const decoded = jwt.verify(token, "YOUR_SECRET_KEY") as DecodedToken;
-
-    // Send back user info to the client (but not the token itself)
-    return res.status(200).json({
-      userId: decoded.id,
-      authenticated: true,
-    });
-  } catch (error) {
-    return res.status(401).json({ error: "Invalid token" });
-  }
-}
+//   if (authResponse.authenticated) {
+//     return res.status(200).json(authResponse);
+//   } else {
+//     return res.status(401).json(authResponse);
+//   }
+// }
