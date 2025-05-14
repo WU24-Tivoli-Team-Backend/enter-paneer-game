@@ -1,15 +1,16 @@
 "use client";
 
 import { useState, useRef, useEffect, FormEvent, ChangeEvent } from "react";
+import JwtDisplay from "./JwtDisplay"; // Import the JWT display component
 
 export default function Game() {
-  const [input, setInput] = useState("");
-  const [hasWon, setHasWon] = useState(false);
-  const [attempts, setAttempts] = useState(0);
+  const [input, setInput] = useState<string>("");
+  const [hasWon, setHasWon] = useState<boolean>(false);
+  const [attempts, setAttempts] = useState<number>(0);
   const [encouragement, setEncouragement] = useState<string | null>(null);
-  const [showMessage, setShowMessage] = useState(false);
-  const [hasPaid, setHasPaid] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
+  const [showMessage, setShowMessage] = useState<boolean>(false);
+  const [hasPaid, setHasPaid] = useState<boolean>(false);
+  const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const typingTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -133,6 +134,9 @@ export default function Game() {
         <h1 className="text-8xl font-bold mb-10 text-[#e73413] text-center">
           TYPE PANEER TO WIN
         </h1>
+
+        {/* JWT Token Display Section */}
+        <JwtDisplay />
 
         {!hasPaid ? (
           <div className="w-full flex flex-col items-center">
