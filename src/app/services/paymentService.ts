@@ -1,4 +1,3 @@
-import { createPaneerTransaction } from "./transactionService";
 import { GAME_CONFIG } from "../config/gameConfig";
 
 export interface PaymentResult {
@@ -10,7 +9,7 @@ export interface PaymentResult {
 
 /**
  * Processes a payment and creates a transaction for the Paneer game
- * Centralizes payment logic that was previously duplicated across components
+ * Using server-side API route to keep API key secure
  */
 export async function processPayment(
   jwtToken: string | null
@@ -23,8 +22,6 @@ export async function processPayment(
   }
 
   try {
-    const apiKey = process.env.NEXT_PUBLIC_API_KEY || "";
-
     const transactionPayload = {
       amusement_id: GAME_CONFIG.AMUSEMENT_ID,
       stake_amount: GAME_CONFIG.COST,
@@ -32,18 +29,30 @@ export async function processPayment(
 
     console.log("Creating transaction with payload:", transactionPayload);
 
-    const transactionResponse = await createPaneerTransaction(
-      jwtToken,
-      apiKey,
-      transactionPayload
-    );
+    const response = await fetch("/api/transactions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${jwtToken}`,
+      },
+      body: JSON.stringify(transactionPayload),
+    });
 
-    console.log("Transaction created:", transactionResponse);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(
+        errorData.error || `Payment failed with status: ${response.status}`
+      );
+    }
+
+    const data = await response.json();
+
+    console.log("Transaction created:", data);
 
     return {
       success: true,
       message: "Payment successful",
-      transactionId: transactionResponse?.id || `mock-${Date.now()}`,
+      transactionId: data?.id || `mock-${Date.now()}`,
     };
   } catch (error) {
     console.error("Payment processing error:", error);
