@@ -24,6 +24,8 @@ interface GameContextProps {
   setIsProcessing: (isProcessing: boolean) => void;
   paymentError: string | null;
   setPaymentError: (error: string | null) => void;
+  jwtToken: string | null;
+  setJwtToken: (token: string | null) => void;
   inputRef: React.RefObject<HTMLInputElement | null>;
   typingTimerRef: React.MutableRefObject<NodeJS.Timeout | null>;
   resetGame: () => void;
@@ -47,6 +49,7 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({
   const [hasPaid, setHasPaid] = useState<boolean>(false);
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
+  const [jwtToken, setJwtToken] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const typingTimerRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -90,6 +93,8 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({
         setIsProcessing,
         paymentError,
         setPaymentError,
+        jwtToken,
+        setJwtToken,
         inputRef,
         typingTimerRef,
         resetGame,

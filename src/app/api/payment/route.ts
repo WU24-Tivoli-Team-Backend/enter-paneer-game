@@ -1,83 +1,68 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-const jwt = require("jsonwebtoken");
+// CAN I DELETE THIS FILE?
+// import type { NextApiRequest, NextApiResponse } from "next";
+// import jwt from "jsonwebtoken";
 
-interface DecodedToken {
-  id: string;
-  [key: string]: any;
-}
+// interface DecodedToken {
+//   id: string;
+//   [key: string]: any;
+// }
 
-interface PaymentRequest {
-  amount: number;
-  currency: string;
-  description: string;
-}
+// type ResponseData = {
+//   success: boolean;
+//   hasSufficientBalance: boolean;
+//   transactionId?: string;
+//   message?: string;
+//   error?: string;
+// };
 
-interface PaymentResponse {
-  success: boolean;
-  hasSufficientBalance: boolean;
-  transactionId?: string;
-  message?: string;
-}
+// export default async function handler(
+//   req: NextApiRequest,
+//   res: NextApiResponse<ResponseData>
+// ) {
+//   if (req.method !== "POST") {
+//     return res.status(405).json({
+//       success: false,
+//       hasSufficientBalance: false,
+//       error: "Method not allowed",
+//     });
+//   }
 
-type ResponseData = PaymentResponse | { error: string };
+//   const authHeader = req.headers.authorization;
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<ResponseData>
-) {
-  const authHeader = req.headers.authorization;
+//   if (!authHeader || !authHeader.startsWith("Bearer ")) {
+//     // For development and testing, we can still allow payment without a token
+//     console.warn("Payment request missing authentication token");
+//   }
 
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ error: "Authentication required" });
-  }
+//   try {
+//     const { amount, currency, description } = req.body;
 
-  const token = authHeader.split(" ")[1];
+//     if (!amount || !currency) {
+//       return res.status(400).json({
+//         success: false,
+//         hasSufficientBalance: false,
+//         error: "Missing required payment information",
+//       });
+//     }
 
-  try {
-    const decoded = jwt.verify(token, "YOUR_SECRET_KEY") as DecodedToken;
-    const body = req.body as PaymentRequest;
+//     // In a real implementation, this would call your payment API
+//     // For now, we'll simulate a successful payment
 
-    const response = await fetch("https://yrgobanken.se/api/process_payment", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        amount: body.amount,
-        currency: body.currency,
-        description: body.description,
-      }),
-    });
+//     // Simulate payment processing delay
+//     await new Promise((resolve) => setTimeout(resolve, 500));
 
-    const data = await response.json();
-
-    if (!response.ok) {
-      if (response.status === 402 || data.code === "INSUFFICIENT_BALANCE") {
-        return res.status(200).json({
-          success: false,
-          hasSufficientBalance: false,
-          message: "Insufficient balance for this purchase",
-        });
-      }
-
-      return res
-        .status(response.status)
-        .json({ error: data.message || "Payment processing failed" });
-    }
-
-    return res.status(200).json({
-      success: true,
-      hasSufficientBalance: true,
-      transactionId: data.transactionId,
-      message: "Payment successful",
-    });
-  } catch (error: any) {
-    if (error.name === "JsonWebTokenError") {
-      return res.status(401).json({ error: "Invalid token" });
-    }
-    return res.status(500).json({
-      error: error instanceof Error ? error.message : "Server error",
-    });
-  }
-}
+//     // Return successful payment response
+//     return res.status(200).json({
+//       success: true,
+//       hasSufficientBalance: true,
+//       transactionId: `mock-${Date.now()}`,
+//       message: "Payment successful",
+//     });
+//   } catch (error: any) {
+//     return res.status(500).json({
+//       success: false,
+//       hasSufficientBalance: false,
+//       error: error instanceof Error ? error.message : "Server error",
+//     });
+//   }
+// }
