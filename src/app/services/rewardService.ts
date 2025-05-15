@@ -21,22 +21,24 @@ export async function processReward(
   }
 
   try {
-    const basePayload = {
-      amusement_id: GAME_CONFIG.AMUSEMENT_ID,
-    };
+    let transactionPayload;
 
-    // Build payload based on reward type
-    const transactionPayload =
-      rewardType === "cash"
-        ? {
-            ...basePayload,
-            payout_amount: 2.0, // 2€ cash reward
-          }
-        : {
-            ...basePayload,
-            payout_amount: 0.0, // No cash for stamp reward
-            stamp_id: 1, // Use an appropriate stamp ID from your system
-          };
+    if (rewardType === "cash") {
+      transactionPayload = {
+        amusement_id: GAME_CONFIG.AMUSEMENT_ID,
+        payout_amount: 2.0,
+      };
+    } else {
+      // For stamp rewards, we need to provide a payout_amount
+      // since stamps can only be awarded with payouts
+      transactionPayload = {
+        amusement_id: GAME_CONFIG.AMUSEMENT_ID,
+        payout_amount: 0.1,
+        stamp_id: GAME_CONFIG.STAMP_ID,
+      };
+    }
+
+    console.log("Sending transaction payload:", transactionPayload);
 
     const response = await fetch("/api/transactions", {
       method: "POST",
@@ -47,22 +49,41 @@ export async function processReward(
       body: JSON.stringify(transactionPayload),
     });
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(
-        errorData.error || `Reward failed with status: ${response.status}`
-      );
+    // Parse the response to handle errors better
+    const contentType = response.headers.get("content-type");
+    let data;
+
+    if (contentType && contentType.includes("application/json")) {
+      data = await response.json();
+    } else {
+      const text = await response.text();
+      console.log("Non-JSON response:", text);
+      data = { message: text };
     }
 
-    const data = await response.json();
+    if (!response.ok) {
+      let errorMessage = "Reward failed";
+
+      if (data) {
+        if (data.error) {
+          errorMessage = data.error;
+        } else if (data.message) {
+          errorMessage = data.message;
+        } else if (data.errors) {
+          errorMessage = JSON.stringify(data.errors);
+        }
+      }
+
+      throw new Error(errorMessage);
+    }
 
     return {
       success: true,
       message:
         rewardType === "cash"
-          ? "Cash reward successful"
-          : "Stamp reward successful",
-      transactionId: data?.id || `mock-${Date.now()}`,
+          ? "You received a 2€ reward!"
+          : "You received a new stamp for your collection!",
+      transactionId: data?.transaction?.id || data?.id || `mock-${Date.now()}`,
     };
   } catch (error) {
     console.error("Reward processing error:", error);
