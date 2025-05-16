@@ -6,8 +6,11 @@ import React, {
   useContext,
   useRef,
   ReactNode,
+  useEffect,
 } from "react";
 import { EncouragementMessage, EncouragementGenerator } from "./types";
+import { GAME_CONFIG } from "../config/gameConfig";
+import { lookupAmusementByName } from "../services/amusementService";
 
 interface GameContextProps {
   input: string;
@@ -30,6 +33,10 @@ interface GameContextProps {
   typingTimerRef: React.MutableRefObject<NodeJS.Timeout | null>;
   resetGame: () => void;
   encouragingMessages: EncouragementGenerator[];
+  amusementId: number;
+  isAmusementLoading: boolean;
+  amusementError: string | null;
+  retryAmusementLookup: () => void;
 }
 
 const GameContext = createContext<GameContextProps | undefined>(undefined);
@@ -50,8 +57,69 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [jwtToken, setJwtToken] = useState<string | null>(null);
+
+  // For debugging, providing a fallback ID when API fails in development
+  // In production this would need to be dynamically fetched
+  const [amusementId, setAmusementId] = useState<number>(
+    GAME_CONFIG.AMUSEMENT_ID || 11
+  );
+  const [isAmusementLoading, setIsAmusementLoading] = useState<boolean>(true);
+  const [amusementError, setAmusementError] = useState<string | null>(null);
+
   const inputRef = useRef<HTMLInputElement>(null);
   const typingTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Function to look up amusement ID
+  const fetchAmusementId = async () => {
+    try {
+      setIsAmusementLoading(true);
+      setAmusementError(null);
+
+      console.log("Fetching amusement ID for:", GAME_CONFIG.AMUSEMENT_NAME);
+      const result = await lookupAmusementByName(GAME_CONFIG.AMUSEMENT_NAME);
+
+      if (result.success && result.id) {
+        console.log(`Successfully fetched amusement ID: ${result.id}`);
+        setAmusementId(result.id);
+        // Update the global config too
+        GAME_CONFIG.AMUSEMENT_ID = result.id;
+      } else {
+        console.error("Amusement lookup failed:", result.error);
+        setAmusementError(result.error || "Failed to fetch amusement ID");
+
+        // In development, we'll use a fallback ID to make testing easier
+        if (process.env.NODE_ENV === "development") {
+          console.warn(
+            "Using fallback amusement ID for development:",
+            amusementId
+          );
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching amusement ID:", error);
+      setAmusementError("Error fetching amusement ID");
+
+      // In development, use fallback ID
+      if (process.env.NODE_ENV === "development") {
+        console.warn(
+          "Using fallback amusement ID for development:",
+          amusementId
+        );
+      }
+    } finally {
+      setIsAmusementLoading(false);
+    }
+  };
+
+  // Fetch amusement ID on component mount
+  useEffect(() => {
+    fetchAmusementId();
+  }, []);
+
+  // Function to retry amusement lookup
+  const retryAmusementLookup = () => {
+    fetchAmusementId();
+  };
 
   const setEncouragement = (text: string, visible: boolean) => {
     setEncouragementState({ text, visible });
@@ -99,6 +167,10 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({
         typingTimerRef,
         resetGame,
         encouragingMessages,
+        amusementId,
+        isAmusementLoading,
+        amusementError,
+        retryAmusementLookup,
       }}
     >
       {children}

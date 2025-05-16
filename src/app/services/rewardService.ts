@@ -11,7 +11,8 @@ type RewardType = "cash" | "stamp";
 
 export async function processReward(
   jwtToken: string | null,
-  rewardType: RewardType
+  rewardType: RewardType,
+  amusementId: number | undefined
 ): Promise<RewardResult> {
   if (!jwtToken) {
     return {
@@ -20,19 +21,26 @@ export async function processReward(
     };
   }
 
+  if (amusementId === undefined) {
+    return {
+      success: false,
+      error: "Amusement ID not available. Please try again later.",
+    };
+  }
+
   try {
     let transactionPayload;
 
     if (rewardType === "cash") {
       transactionPayload = {
-        amusement_id: GAME_CONFIG.AMUSEMENT_ID,
+        amusement_id: amusementId,
         payout_amount: 2.0,
       };
     } else {
       // For stamp rewards, we need to provide a payout_amount
       // since stamps can only be awarded with payouts
       transactionPayload = {
-        amusement_id: GAME_CONFIG.AMUSEMENT_ID,
+        amusement_id: amusementId,
         payout_amount: 0.1,
         stamp_id: GAME_CONFIG.STAMP_ID,
       };

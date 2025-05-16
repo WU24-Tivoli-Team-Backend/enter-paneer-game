@@ -7,7 +7,8 @@ interface WinnerRewardsProps {
 }
 
 const WinnerRewards: React.FC<WinnerRewardsProps> = ({ onRewardClaimed }) => {
-  const { jwtToken } = useGameContext();
+  const { jwtToken, amusementId, amusementError, retryAmusementLookup } =
+    useGameContext();
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -17,7 +18,7 @@ const WinnerRewards: React.FC<WinnerRewardsProps> = ({ onRewardClaimed }) => {
     setError(null);
 
     try {
-      const result = await processReward(jwtToken, "cash");
+      const result = await processReward(jwtToken, "cash", amusementId);
 
       if (result.success) {
         setSuccessMessage(`You received a 2€ reward!`);
@@ -40,7 +41,7 @@ const WinnerRewards: React.FC<WinnerRewardsProps> = ({ onRewardClaimed }) => {
     setError(null);
 
     try {
-      const result = await processReward(jwtToken, "stamp");
+      const result = await processReward(jwtToken, "stamp", amusementId);
 
       if (result.success) {
         setSuccessMessage(`You received a new stamp for your collection!`);
@@ -57,6 +58,35 @@ const WinnerRewards: React.FC<WinnerRewardsProps> = ({ onRewardClaimed }) => {
       setIsProcessing(false);
     }
   };
+
+  // If there was an error with the amusement ID lookup, show retry option
+  if (amusementError) {
+    return (
+      <div className="mt-8 w-full">
+        <div className="p-4 bg-red-100 text-red-800 border border-red-300 rounded-lg text-center mb-4">
+          <p className="mb-2">
+            Unable to process rewards due to a connection error.
+          </p>
+          <p className="text-sm">{amusementError}</p>
+        </div>
+        <div className="flex justify-center">
+          <button
+            onClick={retryAmusementLookup}
+            className="bg-[#e73413] text-white border-none rounded-2xl p-3 text-lg font-bold cursor-pointer transition-all hover:bg-[#d62800]"
+          >
+            Retry Connection
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // In development, we'll show which amusement ID we're using
+  const devInfo = process.env.NODE_ENV === "development" && (
+    <div className="mt-2 text-xs text-gray-500 text-center">
+      Using amusement ID: {amusementId}
+    </div>
+  );
 
   return (
     <div className="mt-8 w-full">
@@ -101,6 +131,8 @@ const WinnerRewards: React.FC<WinnerRewardsProps> = ({ onRewardClaimed }) => {
           {successMessage}
         </div>
       )}
+
+      {devInfo}
     </div>
   );
 };

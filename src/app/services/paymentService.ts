@@ -12,7 +12,8 @@ export interface PaymentResult {
  * Using server-side API route to keep API key secure
  */
 export async function processPayment(
-  jwtToken: string | null
+  jwtToken: string | null,
+  amusementId?: number
 ): Promise<PaymentResult> {
   if (!jwtToken) {
     return {
@@ -22,8 +23,9 @@ export async function processPayment(
   }
 
   try {
+    // Use provided amusementId or fallback to config default
     const transactionPayload = {
-      amusement_id: GAME_CONFIG.AMUSEMENT_ID,
+      amusement_id: amusementId || GAME_CONFIG.AMUSEMENT_ID,
       stake_amount: GAME_CONFIG.COST,
     };
 
@@ -38,6 +40,7 @@ export async function processPayment(
       body: JSON.stringify(transactionPayload),
     });
 
+    // For non-OK responses, try to extract the error message
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       throw new Error(
@@ -52,7 +55,7 @@ export async function processPayment(
     return {
       success: true,
       message: "Payment successful",
-      transactionId: data?.id || `mock-${Date.now()}`,
+      transactionId: data?.id || data?.transaction?.id || `mock-${Date.now()}`,
     };
   } catch (error) {
     console.error("Payment processing error:", error);

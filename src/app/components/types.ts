@@ -14,7 +14,8 @@ export interface PaymentResponse {
 export type EncouragementGenerator = (text: string) => string;
 
 export interface GameConfig {
-  AMUSEMENT_ID: number;
+  AMUSEMENT_NAME: string;
+  AMUSEMENT_ID?: number;
   GROUP_ID: number;
   COST: number;
   CURRENCY: string;
