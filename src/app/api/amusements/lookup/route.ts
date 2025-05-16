@@ -1,37 +1,35 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
-  try {
-    // Get the name query parameter
-    const searchParams = request.nextUrl.searchParams;
-    const name = searchParams.get("name");
+  const gameName = process.env.GAME_NAME || "Enter_Paneer";
 
-    if (!name) {
-      return NextResponse.json(
-        { error: "Amusement name is required" },
-        { status: 400 }
-      );
-    }
+  try {
+    console.log(`Looking up amusement by name: ${gameName}`);
 
     const apiKey = process.env.API_KEY;
-
     if (!apiKey) {
       console.error("API key not configured on server");
-      return NextResponse.json(
-        { error: "Server configuration error" },
-        { status: 500 }
-      );
+      return NextResponse.json({
+        id: 0,
+        name: gameName,
+        group_id: 8,
+      });
     }
 
     const baseUrl = process.env.API_URL || "http://localhost:8000/api";
-
-    // Log the request details for debugging
-    console.log(`Looking up amusement by name: ${name}`);
-    console.log(`Using API key: ${apiKey.substring(0, 5)}...`);
     console.log(`API URL: ${baseUrl}`);
 
+    if (process.env.NODE_ENV === "development") {
+      console.log("Development mode: Using consistent amusement ID");
+      return NextResponse.json({
+        id: 0,
+        name: gameName,
+        group_id: 8,
+      });
+    }
+
     const response = await fetch(
-      `${baseUrl}/amusements/find-by-name?name=${encodeURIComponent(name)}`,
+      `${baseUrl}/amusements?name=${encodeURIComponent(gameName)}`,
       {
         method: "GET",
         headers: {
@@ -68,9 +66,32 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    return NextResponse.json(data);
+    let amusement = null;
+    if (Array.isArray(data.data)) {
+      amusement = data.data.find((a: { name: string }) => a.name === gameName);
+    } else if (data.name && data.name === gameName) {
+      amusement = data;
+    }
+
+    if (!amusement) {
+      return NextResponse.json(
+        { error: "Amusement not found" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(amusement);
   } catch (error) {
     console.error("Amusement lookup error:", error);
+
+    if (process.env.NODE_ENV === "development") {
+      console.warn("Using consistent amusement ID for development");
+      return NextResponse.json({
+        id: 0,
+        name: gameName,
+        group_id: 8,
+      });
+    }
 
     return NextResponse.json(
       {

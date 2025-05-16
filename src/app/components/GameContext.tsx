@@ -58,8 +58,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({
   const [paymentError, setPaymentError] = useState<string | null>(null);
   const [jwtToken, setJwtToken] = useState<string | null>(null);
 
-  // For debugging, providing a fallback ID when API fails in development
-  // In production this would need to be dynamically fetched
   const [amusementId, setAmusementId] = useState<number>(
     GAME_CONFIG.AMUSEMENT_ID || 11
   );
@@ -69,7 +67,6 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({
   const inputRef = useRef<HTMLInputElement>(null);
   const typingTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Function to look up amusement ID
   const fetchAmusementId = async () => {
     try {
       setIsAmusementLoading(true);
@@ -81,42 +78,40 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({
       if (result.success && result.id) {
         console.log(`Successfully fetched amusement ID: ${result.id}`);
         setAmusementId(result.id);
-        // Update the global config too
         GAME_CONFIG.AMUSEMENT_ID = result.id;
       } else {
         console.error("Amusement lookup failed:", result.error);
         setAmusementError(result.error || "Failed to fetch amusement ID");
 
-        // In development, we'll use a fallback ID to make testing easier
         if (process.env.NODE_ENV === "development") {
-          console.warn(
-            "Using fallback amusement ID for development:",
-            amusementId
-          );
+          console.warn("Using fallback amusement ID for development");
+          const FALLBACK_AMUSEMENT_ID = 0;
+          setAmusementId(FALLBACK_AMUSEMENT_ID);
+          GAME_CONFIG.AMUSEMENT_ID = FALLBACK_AMUSEMENT_ID;
         }
       }
     } catch (error) {
       console.error("Error fetching amusement ID:", error);
       setAmusementError("Error fetching amusement ID");
 
-      // In development, use fallback ID
+      // For development, use the same fallback approach
       if (process.env.NODE_ENV === "development") {
         console.warn(
-          "Using fallback amusement ID for development:",
-          amusementId
+          "Using fallback amusement ID for development due to error"
         );
+        const FALLBACK_AMUSEMENT_ID = 11;
+        setAmusementId(FALLBACK_AMUSEMENT_ID);
+        GAME_CONFIG.AMUSEMENT_ID = FALLBACK_AMUSEMENT_ID;
       }
     } finally {
       setIsAmusementLoading(false);
     }
   };
 
-  // Fetch amusement ID on component mount
   useEffect(() => {
     fetchAmusementId();
   }, []);
 
-  // Function to retry amusement lookup
   const retryAmusementLookup = () => {
     fetchAmusementId();
   };
