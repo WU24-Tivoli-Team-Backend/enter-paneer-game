@@ -29,10 +29,10 @@ export async function processReward(
         payout_amount: 2.0,
       };
     } else {
-      // For stamp rewards, we need to provide a payout_amount
-      // since stamps can only be awarded with payouts
+      // For stamp rewards, we need both payout_amount and stamp_id
       transactionPayload = {
         amusement_id: GAME_CONFIG.AMUSEMENT_ID,
+        payout_amount: 0.1, // Small amount required for stamp transactions
         stamp_id: GAME_CONFIG.STAMP_ID,
       };
     }
@@ -48,41 +48,40 @@ export async function processReward(
       body: JSON.stringify(transactionPayload),
     });
 
-    // Parse the response to handle errors better
-    const contentType = response.headers.get("content-type");
-    let data;
-
-    if (contentType && contentType.includes("application/json")) {
-      data = await response.json();
-    } else {
-      const text = await response.text();
-      console.log("Non-JSON response:", text);
-      data = { message: text };
-    }
-
     if (!response.ok) {
-      let errorMessage = "Reward failed";
-
-      if (data) {
-        if (data.error) {
-          errorMessage = data.error;
-        } else if (data.message) {
-          errorMessage = data.message;
-        } else if (data.errors) {
-          errorMessage = JSON.stringify(data.errors);
-        }
+      // Try to get error details from response
+      let errorData;
+      try {
+        errorData = await response.json();
+      } catch (e) {
+        // If response can't be parsed as JSON, use text or status
+        const text = await response.text();
+        throw new Error(
+          text || `Request failed with status ${response.status}`
+        );
       }
+
+      // Extract error message from data
+      const errorMessage =
+        errorData.error ||
+        errorData.message ||
+        errorData.errors?.message ||
+        JSON.stringify(errorData.errors) ||
+        "Unknown error";
 
       throw new Error(errorMessage);
     }
+
+    // Parse successful response
+    const data = await response.json();
 
     return {
       success: true,
       message:
         rewardType === "cash"
-          ? "You received a 2€ reward!"
+          ? "You received a €2 reward!"
           : "You received a new stamp for your collection!",
-      transactionId: data?.transaction?.id || data?.id || `mock-${Date.now()}`,
+      transactionId: data?.transaction?.id || data?.id || `tx-${Date.now()}`,
     };
   } catch (error) {
     console.error("Reward processing error:", error);
