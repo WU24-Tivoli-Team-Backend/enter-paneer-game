@@ -30,12 +30,18 @@ export async function POST(request: NextRequest) {
 
     const payload = await request.json();
 
-    const baseUrl = process.env.API_URL || "http://localhost:8000/api";
+    // Get the base URL from environment or use default
+    const baseUrl = process.env.API_URL || "http://localhost:8000";
 
-    console.log(`Forwarding request to ${baseUrl}/transactions`);
+    // Ensure the URL is properly formatted with /api/transactions
+    const apiUrl = baseUrl.endsWith("/api")
+      ? `${baseUrl}/transactions`
+      : `${baseUrl}/api/transactions`;
+
+    console.log(`Forwarding request to ${apiUrl}`);
     console.log("Payload:", payload);
 
-    const response = await fetch(`${baseUrl}/transactions`, {
+    const response = await fetch(apiUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

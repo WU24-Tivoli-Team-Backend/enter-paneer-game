@@ -33,7 +33,6 @@ export async function processReward(
       // since stamps can only be awarded with payouts
       transactionPayload = {
         amusement_id: GAME_CONFIG.AMUSEMENT_ID,
-        payout_amount: 0.1,
         stamp_id: GAME_CONFIG.STAMP_ID,
       };
     }
