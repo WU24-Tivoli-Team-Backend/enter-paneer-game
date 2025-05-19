@@ -1,5 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 
+export async function GET(request: NextRequest) {
+  return NextResponse.json(
+    { message: "Transactions API endpoint is working" },
+    { status: 200 }
+  );
+}
+
 export async function POST(request: NextRequest) {
   try {
     const authToken = request.headers.get("Authorization")?.split(" ")[1];
@@ -25,6 +32,9 @@ export async function POST(request: NextRequest) {
 
     const baseUrl = process.env.API_URL || "http://localhost:8000/api";
 
+    console.log(`Forwarding request to ${baseUrl}/transactions`);
+    console.log("Payload:", payload);
+
     const response = await fetch(`${baseUrl}/transactions`, {
       method: "POST",
       headers: {
@@ -37,6 +47,7 @@ export async function POST(request: NextRequest) {
     });
 
     const text = await response.text();
+    console.log("Response from external API:", text);
 
     let data;
     try {

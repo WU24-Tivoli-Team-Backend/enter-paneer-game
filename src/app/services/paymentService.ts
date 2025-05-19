@@ -7,10 +7,6 @@ export interface PaymentResult {
   transactionId?: string;
 }
 
-/**
- * Processes a payment and creates a transaction for the Paneer game
- * Using server-side API route to keep API key secure
- */
 export async function processPayment(
   jwtToken: string | null
 ): Promise<PaymentResult> {
@@ -38,21 +34,22 @@ export async function processPayment(
       body: JSON.stringify(transactionPayload),
     });
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      throw new Error(
-        errorData.error || `Payment failed with status: ${response.status}`
-      );
-    }
+    console.log("Response status:", response.status);
 
     const data = await response.json();
 
-    console.log("Transaction created:", data);
+    console.log("Response data:", data);
+
+    if (!response.ok) {
+      throw new Error(
+        data.error || `Payment failed with status: ${response.status}`
+      );
+    }
 
     return {
       success: true,
       message: "Payment successful",
-      transactionId: data?.id || `mock-${Date.now()}`,
+      transactionId: data?.id || data?.transaction?.id || `tx-${Date.now()}`,
     };
   } catch (error) {
     console.error("Payment processing error:", error);
