@@ -1,105 +1,66 @@
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
-  const gameName = process.env.GAME_NAME || "Enter_Paneer";
+  const url = new URL(request.url);
+  const name = url.searchParams.get("name");
+
+  if (!name) {
+    return NextResponse.json(
+      { error: "Amusement name is required" },
+      { status: 400 }
+    );
+  }
 
   try {
-    console.log(`Looking up amusement by name: ${gameName}`);
-
     const apiKey = process.env.API_KEY;
     if (!apiKey) {
       console.error("API key not configured on server");
-      return NextResponse.json({
-        id: 0,
-        name: gameName,
-        group_id: 8,
-      });
+      return NextResponse.json(
+        { error: "Server configuration error" },
+        { status: 500 }
+      );
     }
 
     const baseUrl = process.env.API_URL || "http://localhost:8000/api";
-    console.log(`API URL: ${baseUrl}`);
-
-    if (process.env.NODE_ENV === "development") {
-      console.log("Development mode: Using consistent amusement ID");
-      return NextResponse.json({
-        id: 0,
-        name: gameName,
-        group_id: 8,
-      });
-    }
 
     const response = await fetch(
-      `${baseUrl}/amusements?name=${encodeURIComponent(gameName)}`,
+      `${baseUrl}/amusements/find-by-name?name=${encodeURIComponent(name)}`,
       {
         method: "GET",
         headers: {
+          "Content-Type": "application/json",
           Accept: "application/json",
           "X-API-Key": apiKey,
         },
       }
     );
 
-    const text = await response.text();
+    const responseText = await response.text();
     console.log("Response status:", response.status);
-    console.log("Response text:", text?.substring(0, 200));
-
-    let data;
-    try {
-      data = text ? JSON.parse(text) : {};
-    } catch (e) {
-      console.error("Failed to parse JSON response:", text);
-      return NextResponse.json(
-        { error: "Invalid JSON response from external API" },
-        { status: 502 }
-      );
-    }
+    console.log("Response text:", responseText);
 
     if (!response.ok) {
-      const errorMessage =
-        data?.message ||
-        data?.error ||
-        `Lookup failed with status: ${response.status}`;
-      console.error("Error from API:", errorMessage);
       return NextResponse.json(
-        { error: errorMessage },
+        { error: "Failed to lookup amusement" },
         { status: response.status }
       );
     }
 
-    let amusement = null;
-    if (Array.isArray(data.data)) {
-      amusement = data.data.find((a: { name: string }) => a.name === gameName);
-    } else if (data.name && data.name === gameName) {
-      amusement = data;
-    }
-
-    if (!amusement) {
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch (e) {
       return NextResponse.json(
-        { error: "Amusement not found" },
-        { status: 404 }
+        { error: "Invalid response from API" },
+        { status: 502 }
       );
     }
 
-    return NextResponse.json(amusement);
+    return NextResponse.json(data);
   } catch (error) {
-    console.error("Amusement lookup error:", error);
-
-    if (process.env.NODE_ENV === "development") {
-      console.warn("Using consistent amusement ID for development");
-      return NextResponse.json({
-        id: 0,
-        name: gameName,
-        group_id: 8,
-      });
-    }
-
+    console.error("Error in amusement lookup:", error);
     return NextResponse.json(
-      {
-        error:
-          error instanceof Error
-            ? error.message
-            : "Server error during amusement lookup",
-      },
+      { error: "Server error during amusement lookup" },
       { status: 500 }
     );
   }

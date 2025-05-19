@@ -75,13 +75,14 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({
       console.log("Fetching amusement ID for:", GAME_CONFIG.AMUSEMENT_NAME);
       const result = await lookupAmusementByName(GAME_CONFIG.AMUSEMENT_NAME);
 
-      if (result.success && result.id) {
+      if (result.success && result.id !== undefined) {
         console.log(`Successfully fetched amusement ID: ${result.id}`);
         setAmusementId(result.id);
         GAME_CONFIG.AMUSEMENT_ID = result.id;
       } else {
-        console.error("Amusement lookup failed:", result.error);
-        setAmusementError(result.error || "Failed to fetch amusement ID");
+        const errorMsg = result.error || "Failed to fetch amusement ID";
+        console.error("Amusement lookup failed:", errorMsg);
+        setAmusementError(errorMsg);
 
         if (process.env.NODE_ENV === "development") {
           console.warn("Using fallback amusement ID for development");
@@ -91,15 +92,15 @@ export const GameProvider: React.FC<{ children: ReactNode }> = ({
         }
       }
     } catch (error) {
-      console.error("Error fetching amusement ID:", error);
-      setAmusementError("Error fetching amusement ID");
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      console.error("Error fetching amusement ID:", errorMsg);
+      setAmusementError(errorMsg);
 
-      // For development, use the same fallback approach
       if (process.env.NODE_ENV === "development") {
         console.warn(
           "Using fallback amusement ID for development due to error"
         );
-        const FALLBACK_AMUSEMENT_ID = 11;
+        const FALLBACK_AMUSEMENT_ID = 0;
         setAmusementId(FALLBACK_AMUSEMENT_ID);
         GAME_CONFIG.AMUSEMENT_ID = FALLBACK_AMUSEMENT_ID;
       }

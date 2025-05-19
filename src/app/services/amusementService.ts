@@ -26,6 +26,7 @@ export async function lookupAmusementByName(
         method: "GET",
         headers: {
           "Content-Type": "application/json",
+          Accept: "application/json",
         },
       }
     );
@@ -49,6 +50,15 @@ export async function lookupAmusementByName(
           data?.message ||
           `Lookup failed with status: ${response.status}`
       );
+    }
+
+    if (data.id !== undefined) {
+      return {
+        success: true,
+        id: data.id,
+        name: data.name,
+        group_id: data.group_id,
+      };
     }
 
     if (Array.isArray(data?.data)) {
