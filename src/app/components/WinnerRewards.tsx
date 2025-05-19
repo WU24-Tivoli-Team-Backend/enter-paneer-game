@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useGameContext } from "./GameContext";
-import { processReward } from "../services/rewardService";
+import { processReward } from "../services/transactionService";
 
 interface WinnerRewardsProps {
   onRewardClaimed: () => void;

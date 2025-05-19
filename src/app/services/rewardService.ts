@@ -29,7 +29,7 @@ export async function processReward(
         payout_amount: 2.0,
       };
     } else {
-      // For stamp rewards, we need both payout_amount and stamp_id
+      // For stamp rewards, we need both payout_amount and stamp_id for now. This will be fixed soon in backend.
       transactionPayload = {
         amusement_id: GAME_CONFIG.AMUSEMENT_ID,
         payout_amount: 0.1, // Small amount required for stamp transactions
@@ -49,12 +49,10 @@ export async function processReward(
     });
 
     if (!response.ok) {
-      // Try to get error details from response
       let errorData;
       try {
         errorData = await response.json();
       } catch (e) {
-        // If response can't be parsed as JSON, use text or status
         const text = await response.text();
         throw new Error(
           text || `Request failed with status ${response.status}`
@@ -72,7 +70,6 @@ export async function processReward(
       throw new Error(errorMessage);
     }
 
-    // Parse successful response
     const data = await response.json();
 
     return {

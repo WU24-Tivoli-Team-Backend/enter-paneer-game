@@ -1,7 +1,7 @@
 import React from "react";
 import { useGameContext } from "./GameContext";
 import { GAME_CONFIG } from "../config/gameConfig";
-import { processPayment } from "../services/paymentService";
+import { processPayment } from "../services/transactionService";
 
 const PaymentSection: React.FC = () => {
   const {
