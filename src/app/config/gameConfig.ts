@@ -5,5 +5,5 @@ export const GAME_CONFIG: GameConfig = {
   GROUP_ID: 8,
   COST: 2.0,
   CURRENCY: "EUR",
-  STAMP_ID: process.env.STAMP_ID ? parseInt(process.env.STAMP_ID) : 1,
+  STAMP_ID: 1,
 };
