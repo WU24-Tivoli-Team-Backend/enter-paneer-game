@@ -2,7 +2,11 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
   try {
-    const authToken = request.headers.get("Authorization")?.split(" ")[1];
+    // Extract the JWT token from Authorization header
+    const authHeader = request.headers.get("Authorization");
+    console.log("Auth header:", authHeader);
+
+    const authToken = authHeader?.split(" ")[1];
 
     if (!authToken) {
       return NextResponse.json(

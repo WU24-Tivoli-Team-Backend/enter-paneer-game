@@ -1,9 +1,11 @@
 import { GameConfig } from "../components/types";
 
 export const GAME_CONFIG: GameConfig = {
-  AMUSEMENT_ID: 11,
+  AMUSEMENT_ID: 11, // Default value, override with env if available
   GROUP_ID: 8,
   COST: 2.0,
   CURRENCY: "EUR",
-  STAMP_ID: 1,
+  STAMP_ID: 1, // Default value, override with env if available
 };
+
+console.log("Game configuration:", GAME_CONFIG);
