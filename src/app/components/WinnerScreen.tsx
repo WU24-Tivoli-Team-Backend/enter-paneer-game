@@ -1,14 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import { useGameContext } from "./GameContext";
-import WinnerRewards from "./WinnerRewards";
 
 const WinnerScreen: React.FC = () => {
   const { attempts, resetGame } = useGameContext();
-  const [rewardClaimed, setRewardClaimed] = useState(false);
-
-  const handleRewardClaimed = () => {
-    setRewardClaimed(true);
-  };
 
   return (
     <div className="flex flex-col items-center w-full animate-[popIn_0.5s_ease-out]">
@@ -22,16 +16,11 @@ const WinnerScreen: React.FC = () => {
           by curdling milk with a fruit or vegetable acid like lemon juice.
         </p>
       </div>
-
-      {!rewardClaimed && (
-        <WinnerRewards onRewardClaimed={handleRewardClaimed} />
-      )}
-
       <button
         onClick={resetGame}
         className="mt-8 bg-white text-[#e73413] border-2 border-[#e73413] rounded-2xl py-5 px-10 text-3xl font-bold cursor-pointer transition-all hover:bg-[rgba(231,52,19,0.05)]"
       >
-        {rewardClaimed ? "Play Again" : "No reward, just play again"}
+        Type &apos;paneer&apos; again
       </button>
     </div>
   );

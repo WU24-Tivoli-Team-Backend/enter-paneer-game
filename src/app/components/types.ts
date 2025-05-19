@@ -18,5 +18,4 @@ export interface GameConfig {
   GROUP_ID: number;
   COST: number;
   CURRENCY: string;
-  STAMP_ID: number;
 }
