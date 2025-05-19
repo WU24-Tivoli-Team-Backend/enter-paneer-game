@@ -5,5 +5,4 @@ export const GAME_CONFIG: GameConfig = {
   GROUP_ID: 8,
   COST: 2.0,
   CURRENCY: "EUR",
-  STAMP_ID: 1,
 };
