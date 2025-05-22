@@ -32,7 +32,7 @@ export async function processReward(
       // For stamp rewards, we need both payout_amount and stamp_id for now. This will be fixed soon in backend.
       transactionPayload = {
         amusement_id: GAME_CONFIG.AMUSEMENT_ID,
-        payout_amount: 0.1, // Small amount required for stamp transactions
+        payout_amount: 1.5, // Small amount required for stamp transactions
         stamp_id: GAME_CONFIG.STAMP_ID,
       };
     }
