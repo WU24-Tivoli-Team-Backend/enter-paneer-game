@@ -12,30 +12,30 @@ const WinnerRewards: React.FC<WinnerRewardsProps> = ({ onRewardClaimed }) => {
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
-  const handleCashReward = async () => {
-    setIsProcessing(true);
-    setError(null);
+  // const handleCashReward = async () => {
+  //   setIsProcessing(true);
+  //   setError(null);
 
-    try {
-      console.log(
-        "Processing cash reward with token:",
-        jwtToken ? "Token exists" : "No token"
-      );
-      const result = await processReward(jwtToken, "cash");
+  //   try {
+  //     console.log(
+  //       "Processing cash reward with token:",
+  //       jwtToken ? "Token exists" : "No token"
+  //     );
+  //     const result = await processReward(jwtToken, "cash");
 
-      if (result.success) {
-        setSuccessMessage(`You received a €2 reward!`);
-        onRewardClaimed();
-      } else {
-        setError(result.error || "Failed to process cash reward");
-      }
-    } catch (error) {
-      console.error("Cash reward error:", error);
-      setError(error instanceof Error ? error.message : "An error occurred");
-    } finally {
-      setIsProcessing(false);
-    }
-  };
+  //     if (result.success) {
+  //       setSuccessMessage(`You received a €2 reward!`);
+  //       onRewardClaimed();
+  //     } else {
+  //       setError(result.error || "Failed to process cash reward");
+  //     }
+  //   } catch (error) {
+  //     console.error("Cash reward error:", error);
+  //     setError(error instanceof Error ? error.message : "An error occurred");
+  //   } finally {
+  //     setIsProcessing(false);
+  //   }
+  // };
 
   const handleStampReward = async () => {
     setIsProcessing(true);
@@ -75,7 +75,7 @@ const WinnerRewards: React.FC<WinnerRewardsProps> = ({ onRewardClaimed }) => {
       <h3 className="text-2xl mb-4 text-center">Choose your reward:</h3>
 
       <div className="flex flex-col md:flex-row gap-4 justify-center">
-        <button
+        {/* <button
           onClick={handleCashReward}
           disabled={isProcessing}
           className={`bg-[#e73413] text-white border-none rounded-2xl p-4 text-xl font-bold cursor-pointer transition-all hover:bg-[#d62800] hover:-translate-y-0.5 active:translate-y-0 ${
@@ -83,7 +83,7 @@ const WinnerRewards: React.FC<WinnerRewardsProps> = ({ onRewardClaimed }) => {
           }`}
         >
           {isProcessing ? "Processing..." : "Get €2 Cash"}
-        </button>
+        </button> */}
 
         <button
           onClick={handleStampReward}
@@ -92,7 +92,7 @@ const WinnerRewards: React.FC<WinnerRewardsProps> = ({ onRewardClaimed }) => {
             isProcessing ? "opacity-70 cursor-not-allowed" : ""
           }`}
         >
-          {isProcessing ? "Processing..." : "Get a Stamp"}
+          {isProcessing ? "Processing..." : "Get a Stamp and 50 cents"}
         </button>
       </div>
 
