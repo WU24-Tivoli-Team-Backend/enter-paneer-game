@@ -6,7 +6,6 @@ const PaneerInput: React.FC = () => {
   const {
     input,
     setInput,
-    hasWon,
     setHasWon,
     attempts,
     setAttempts,

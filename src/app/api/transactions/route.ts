@@ -7,7 +7,7 @@ export async function POST(request: NextRequest) {
     console.log("Auth header:", authHeader);
 
     const authToken = authHeader?.split(" ")[1];
-    
+
     if (!authToken) {
       return NextResponse.json(
         { error: "No JWT token provided" },
@@ -39,12 +39,12 @@ export async function POST(request: NextRequest) {
 
     console.log(`Forwarding request to ${apiUrl}`);
 
-    const response = await fetch('https://yrgobanken.vip/api/transactions', {
+    const response = await fetch("https://yrgobanken.vip/api/transactions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Accept": "application/json",
-        "Authorization": `Bearer ${authToken}`,
+        Accept: "application/json",
+        Authorization: `Bearer ${authToken}`,
         "X-API-Key": apiKey,
       },
       body: JSON.stringify(payload),
@@ -58,8 +58,9 @@ export async function POST(request: NextRequest) {
     let data;
     try {
       data = text ? JSON.parse(text) : {};
-    } catch (e) {
+    } catch (parseError) {
       console.error("Failed to parse JSON response:", text);
+      console.error("Parse error:", parseError);
       return NextResponse.json(
         { error: "Invalid JSON response from external API", rawResponse: text },
         { status: 502 }

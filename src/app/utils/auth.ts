@@ -1,5 +1,16 @@
 import jwt from "jsonwebtoken";
 
+// Type for JWT payload - allows any additional claims
+export interface JwtPayload {
+  exp?: number; // Expiration time
+  iat?: number; // Issued at
+  sub?: string; // Subject
+  aud?: string; // Audience
+  iss?: string; // Issuer
+  id?: string; // Custom user ID field
+  [key: string]: any; // Allow additional custom claims
+}
+
 export interface DecodedToken {
   id: string;
   [key: string]: any;
@@ -25,7 +36,8 @@ export function verifyToken(token: string, secretKey: string): AuthResponse {
       userId: decoded.id,
       authenticated: true,
     };
-  } catch (error) {
+  } catch (verificationError) {
+    console.error("Token verification failed:", verificationError);
     return {
       error: "Invalid token",
       authenticated: false,
@@ -38,7 +50,7 @@ export function verifyToken(token: string, secretKey: string): AuthResponse {
  * @param token JWT token string
  * @returns Decoded payload or null if decoding fails
  */
-export function decodeJwt(token: string): any {
+export function decodeJwt(token: string): JwtPayload | null {
   try {
     const parts = token.split(".");
     if (parts.length !== 3) {
@@ -57,8 +69,8 @@ export function decodeJwt(token: string): any {
     const jsonPayload = JSON.parse(rawPayload);
 
     return jsonPayload;
-  } catch (error) {
-    console.error("Error decoding JWT:", error);
+  } catch (decodeError) {
+    console.error("Error decoding JWT:", decodeError);
     return null;
   }
 }
