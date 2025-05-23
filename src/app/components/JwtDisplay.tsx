@@ -60,3 +60,4 @@ export default function JwtDisplay() {
   // All JWT functionality is preserved but hidden from the user
   return null;
 }
+
