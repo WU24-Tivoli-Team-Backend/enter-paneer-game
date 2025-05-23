@@ -9,7 +9,7 @@ interface DecodedJwtToken {
   sub?: string; // Subject
   aud?: string; // Audience
   iss?: string; // Issuer
-  [key: string]: any; // Allow additional custom claims
+  [key: string]: unknown; // Allow additional custom claims
 }
 
 /**
