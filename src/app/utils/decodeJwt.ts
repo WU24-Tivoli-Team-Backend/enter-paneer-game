@@ -5,7 +5,7 @@ export interface JwtPayload {
   aud?: string; // Audience
   iss?: string; // Issuer
   id?: string; // Custom user ID field
-  [key: string]: any; // Allow additional custom claims
+  [key: string]: unknown; // Allow additional custom claims
 }
 
 /**
