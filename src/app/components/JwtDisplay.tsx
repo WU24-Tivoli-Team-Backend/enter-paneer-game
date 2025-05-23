@@ -13,7 +13,8 @@ interface DecodedJwtToken {
 }
 
 /**
- * Component to receive and display JWT token from parent application
+ * Component to receive JWT token from parent application
+ * Handles authentication logic but renders nothing visible to the user
  */
 export default function JwtDisplay() {
   const { jwtToken, setJwtToken } = useGameContext();
@@ -72,56 +73,7 @@ export default function JwtDisplay() {
     };
   }, [setJwtToken]);
 
-  if (!jwtToken) {
-    return (
-      <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg mb-6">
-        <p className="text-sm text-yellow-700">
-          Waiting for JWT token from parent application...
-        </p>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="p-4 bg-red-50 border border-red-200 rounded-lg mb-6">
-        <p className="text-sm text-red-700">Error: {error}</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="p-4 bg-white rounded-lg border-2 border-[#e0d5c5] mb-6">
-      <h2 className="text-xl font-bold mb-3">JWT Token Information</h2>
-
-      <div className="mb-4">
-        <h3 className="text-sm font-medium text-gray-500 mb-1">Raw Token:</h3>
-        <div className="bg-gray-50 p-3 rounded overflow-auto max-h-24">
-          <p className="text-xs font-mono break-all">{jwtToken}</p>
-        </div>
-      </div>
-
-      {decodedToken && (
-        <div>
-          <h3 className="text-sm font-medium text-gray-500 mb-1">
-            Decoded Content:
-          </h3>
-          <div className="bg-gray-50 p-3 rounded overflow-auto max-h-80">
-            <pre className="text-xs font-mono whitespace-pre-wrap">
-              {JSON.stringify(decodedToken, null, 2)}
-            </pre>
-          </div>
-
-          {decodedToken.exp && (
-            <div className="mt-3 text-xs">
-              <p>
-                <span className="font-medium">Expires:</span>{" "}
-                {new Date(decodedToken.exp * 1000).toLocaleString()}
-              </p>
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
+  // Component handles authentication but renders nothing visible
+  // All JWT functionality is preserved but hidden from the user
+  return null;
 }
