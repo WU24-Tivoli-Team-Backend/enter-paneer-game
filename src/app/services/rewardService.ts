@@ -52,7 +52,11 @@ export async function processReward(
       let errorData;
       try {
         errorData = await response.json();
-      } catch (e) {
+      } catch (jsonParseError) {
+        console.error(
+          "Failed to parse error response as JSON:",
+          jsonParseError
+        );
         const text = await response.text();
         throw new Error(
           text || `Request failed with status ${response.status}`

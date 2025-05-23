@@ -2,12 +2,24 @@ import React, { useEffect, useState } from "react";
 import { useGameContext } from "./GameContext";
 import { decodeJwt } from "../utils/auth";
 
+// Type for decoded JWT token
+interface DecodedJwtToken {
+  exp?: number; // Expiration time
+  iat?: number; // Issued at
+  sub?: string; // Subject
+  aud?: string; // Audience
+  iss?: string; // Issuer
+  [key: string]: any; // Allow additional custom claims
+}
+
 /**
  * Component to receive and display JWT token from parent application
  */
 export default function JwtDisplay() {
   const { jwtToken, setJwtToken } = useGameContext();
-  const [decodedToken, setDecodedToken] = useState<any>(null);
+  const [decodedToken, setDecodedToken] = useState<DecodedJwtToken | null>(
+    null
+  );
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -16,8 +28,8 @@ export default function JwtDisplay() {
         const allowedOrigins = [
           "http://localhost:3000",
           "http://127.0.0.1:3000",
-          'https://tivoli.yrgobanken.vip',
-          'https://yrgobanken.vip'
+          "https://tivoli.yrgobanken.vip",
+          "https://yrgobanken.vip",
         ];
 
         if (!allowedOrigins.includes(event.origin)) {

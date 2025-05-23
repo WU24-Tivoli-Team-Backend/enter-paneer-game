@@ -39,7 +39,8 @@ export async function POST(request: NextRequest) {
 
     console.log(`Forwarding request to ${apiUrl}`);
 
-    const response = await fetch('https://yrgobanken.vip/api/transactions', {
+    const response = await fetch("https://yrgobanken.vip/api/transactions", {
+
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -58,8 +59,9 @@ export async function POST(request: NextRequest) {
     let data;
     try {
       data = text ? JSON.parse(text) : {};
-    } catch (e) {
+    } catch (parseError) {
       console.error("Failed to parse JSON response:", text);
+      console.error("Parse error:", parseError);
       return NextResponse.json(
         { error: "Invalid JSON response from external API", rawResponse: text },
         { status: 502 }
