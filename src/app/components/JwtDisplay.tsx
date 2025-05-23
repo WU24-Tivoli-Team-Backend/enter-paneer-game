@@ -1,27 +1,13 @@
-import React, { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useGameContext } from "./GameContext";
 import { decodeJwt } from "../utils/auth";
-
-// Type for decoded JWT token
-interface DecodedJwtToken {
-  exp?: number; // Expiration time
-  iat?: number; // Issued at
-  sub?: string; // Subject
-  aud?: string; // Audience
-  iss?: string; // Issuer
-  [key: string]: unknown; // Allow additional custom claims
-}
 
 /**
  * Component to receive JWT token from parent application
  * Handles authentication logic but renders nothing visible to the user
  */
 export default function JwtDisplay() {
-  const { jwtToken, setJwtToken } = useGameContext();
-  const [decodedToken, setDecodedToken] = useState<DecodedJwtToken | null>(
-    null
-  );
-  const [error, setError] = useState<string | null>(null);
+  const { setJwtToken } = useGameContext();
 
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
@@ -45,19 +31,16 @@ export default function JwtDisplay() {
 
           setJwtToken(token);
 
+          // Decode token for validation but don't store it
           const decoded = decodeJwt(token);
-          if (decoded) {
-            setDecodedToken(decoded);
-            setError(null);
-          } else {
-            setError("Failed to decode token");
+          if (!decoded) {
+            console.error("Failed to decode token");
           }
 
           console.log("Received JWT token from parent application");
         }
       } catch (err) {
         console.error("Error processing message:", err);
-        setError("Error processing message from parent application");
       }
     };
 
