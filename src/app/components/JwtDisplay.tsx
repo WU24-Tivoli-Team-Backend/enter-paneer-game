@@ -16,6 +16,8 @@ export default function JwtDisplay() {
         const allowedOrigins = [
           "http://localhost:3000",
           "http://127.0.0.1:3000",
+          'https://tivoli.yrgobanken.vip',
+          'https://yrgobanken.vip'
         ];
 
         if (!allowedOrigins.includes(event.origin)) {

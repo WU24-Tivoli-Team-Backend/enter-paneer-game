@@ -7,14 +7,13 @@ export async function POST(request: NextRequest) {
     console.log("Auth header:", authHeader);
 
     const authToken = authHeader?.split(" ")[1];
-
+    
     if (!authToken) {
       return NextResponse.json(
         { error: "No JWT token provided" },
         { status: 401 }
       );
     }
-
     const apiKey = process.env.API_KEY;
 
     if (!apiKey) {
@@ -31,21 +30,21 @@ export async function POST(request: NextRequest) {
     console.log("Transaction payload received:", payload);
 
     // Get the base URL from environment or use default
-    const baseUrl = process.env.API_URL || "http://localhost:8000";
+    const baseUrl = process.env.API_URL;
 
     // Ensure the URL is properly formatted with /api/transactions
-    const apiUrl = baseUrl.endsWith("/api")
+    const apiUrl = baseUrl?.endsWith("/api")
       ? `${baseUrl}/transactions`
       : `${baseUrl}/api/transactions`;
 
     console.log(`Forwarding request to ${apiUrl}`);
 
-    const response = await fetch(apiUrl, {
+    const response = await fetch('https://yrgobanken.vip/api/transactions', {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Accept: "application/json",
-        Authorization: `Bearer ${authToken}`,
+        "Accept": "application/json",
+        "Authorization": `Bearer ${authToken}`,
         "X-API-Key": apiKey,
       },
       body: JSON.stringify(payload),
