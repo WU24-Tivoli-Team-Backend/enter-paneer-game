@@ -1,3 +1,13 @@
+export interface JwtPayload {
+  exp?: number; // Expiration time
+  iat?: number; // Issued at
+  sub?: string; // Subject
+  aud?: string; // Audience
+  iss?: string; // Issuer
+  id?: string; // Custom user ID field
+  [key: string]: any; // Allow additional custom claims
+}
+
 /**
  * Decodes a JWT token without verification
  * Simple function to decode JWT tokens client-side
@@ -5,7 +15,7 @@
  * @param token - The JWT token string to decode
  * @returns The decoded payload as an object, or null if decoding fails
  */
-export function decodeJwt(token: string): any {
+export function decodeJwt(token: string): JwtPayload | null {
   try {
     // Split the token into parts (header, payload, signature)
     const parts = token.split(".");
